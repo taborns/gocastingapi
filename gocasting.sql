@@ -7,7 +7,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
- SET NAMES utf8mb4 ;
+ SET NAMES utf8 ;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,13 +21,13 @@
 
 DROP TABLE IF EXISTS `auth_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `auth_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `auth_group_permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `auth_group_permissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `group_id` int(11) NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE `auth_group_permissions` (
   KEY `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` (`permission_id`),
   CONSTRAINT `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `auth_group_permissions_group_id_b120cbf9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `auth_permission`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `auth_permission` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -101,7 +101,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `authtoken_token`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `authtoken_token` (
   `key` varchar(40) NOT NULL,
   `created` datetime(6) NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE `authtoken_token` (
   PRIMARY KEY (`key`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `authtoken_token_user_id_35299eff_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,7 +128,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `django_admin_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `django_admin_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `action_time` datetime(6) NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `django_admin_log` (
   KEY `django_admin_log_user_id_c564eba6_fk_gocasting_user_id` (`user_id`),
   CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   CONSTRAINT `django_admin_log_user_id_c564eba6_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,14 +162,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `django_content_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `django_content_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `app_label` varchar(100) NOT NULL,
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,14 +188,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `django_migrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `django_migrations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `app` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,14 +214,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `django_session`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `django_session` (
   `session_key` varchar(40) NOT NULL,
   `session_data` longtext NOT NULL,
   `expire_date` datetime(6) NOT NULL,
   PRIMARY KEY (`session_key`),
   KEY `django_session_expire_date_a5c62663` (`expire_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -240,12 +240,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_additionalskill`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_additionalskill` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +264,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_agentinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_agentinfo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `phone` varchar(15) NOT NULL,
@@ -273,7 +273,7 @@ CREATE TABLE `gocasting_agentinfo` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `gocasting_agentinfo_user_id_3fbd2468_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,7 +292,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_agentmodel`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_agentmodel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `revealed_at` datetime(6) NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE `gocasting_agentmodel` (
   KEY `gocasting_agentmodel_cast_id_32de0cce_fk_gocasting_user_id` (`cast_id`),
   CONSTRAINT `gocasting_agentmodel_agent_id_a6f21f15_fk_gocasting_user_id` FOREIGN KEY (`agent_id`) REFERENCES `gocasting_user` (`id`),
   CONSTRAINT `gocasting_agentmodel_cast_id_32de0cce_fk_gocasting_user_id` FOREIGN KEY (`cast_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -322,7 +322,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_castinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_castinfo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `height` double NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE `gocasting_castinfo` (
   CONSTRAINT `gocasting_castinfo_city_id_c1dfd3f3_fk_gocasting_city_id` FOREIGN KEY (`city_id`) REFERENCES `gocasting_city` (`id`),
   CONSTRAINT `gocasting_castinfo_region_id_74e6b51f_fk_gocasting_region_id` FOREIGN KEY (`region_id`) REFERENCES `gocasting_region` (`id`),
   CONSTRAINT `gocasting_castinfo_user_id_15df9982_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -363,7 +363,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_castinfo_additional_skills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_castinfo_additional_skills` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `castinfo_id` int(11) NOT NULL,
@@ -373,7 +373,7 @@ CREATE TABLE `gocasting_castinfo_additional_skills` (
   KEY `gocasting_castinfo_a_additionalskill_id_ead4ebdd_fk_gocasting` (`additionalskill_id`),
   CONSTRAINT `gocasting_castinfo_a_additionalskill_id_ead4ebdd_fk_gocasting` FOREIGN KEY (`additionalskill_id`) REFERENCES `gocasting_additionalskill` (`id`),
   CONSTRAINT `gocasting_castinfo_a_castinfo_id_3340d74c_fk_gocasting` FOREIGN KEY (`castinfo_id`) REFERENCES `gocasting_castinfo` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -392,7 +392,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_castinfo_intersted_in`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_castinfo_intersted_in` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `castinfo_id` int(11) NOT NULL,
@@ -402,7 +402,7 @@ CREATE TABLE `gocasting_castinfo_intersted_in` (
   KEY `gocasting_castinfo_i_interesttag_id_e27c0c20_fk_gocasting` (`interesttag_id`),
   CONSTRAINT `gocasting_castinfo_i_castinfo_id_e4e31ec0_fk_gocasting` FOREIGN KEY (`castinfo_id`) REFERENCES `gocasting_castinfo` (`id`),
   CONSTRAINT `gocasting_castinfo_i_interesttag_id_e27c0c20_fk_gocasting` FOREIGN KEY (`interesttag_id`) REFERENCES `gocasting_interesttag` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -421,7 +421,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_castinfo_languages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_castinfo_languages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `castinfo_id` int(11) NOT NULL,
@@ -431,7 +431,7 @@ CREATE TABLE `gocasting_castinfo_languages` (
   KEY `gocasting_castinfo_l_language_id_550ae821_fk_gocasting` (`language_id`),
   CONSTRAINT `gocasting_castinfo_l_castinfo_id_8e8f0270_fk_gocasting` FOREIGN KEY (`castinfo_id`) REFERENCES `gocasting_castinfo` (`id`),
   CONSTRAINT `gocasting_castinfo_l_language_id_550ae821_fk_gocasting` FOREIGN KEY (`language_id`) REFERENCES `gocasting_language` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -450,7 +450,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_city`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_city` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -458,7 +458,7 @@ CREATE TABLE `gocasting_city` (
   PRIMARY KEY (`id`),
   KEY `gocasting_city_region_id_5a034ee1_fk_gocasting_region_id` (`region_id`),
   CONSTRAINT `gocasting_city_region_id_5a034ee1_fk_gocasting_region_id` FOREIGN KEY (`region_id`) REFERENCES `gocasting_region` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -477,7 +477,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_educationhistory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_educationhistory` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(130) NOT NULL,
@@ -489,7 +489,7 @@ CREATE TABLE `gocasting_educationhistory` (
   PRIMARY KEY (`id`),
   KEY `gocasting_educationhistory_user_id_c969cb0e_fk_gocasting_user_id` (`user_id`),
   CONSTRAINT `gocasting_educationhistory_user_id_c969cb0e_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -508,12 +508,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_interesttag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_interesttag` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -532,12 +532,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_language`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_language` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -556,7 +556,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_photogallery`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_photogallery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `photo` varchar(100) NOT NULL,
@@ -564,7 +564,7 @@ CREATE TABLE `gocasting_photogallery` (
   PRIMARY KEY (`id`),
   KEY `gocasting_photogallery_user_id_4dd7354e_fk_gocasting_user_id` (`user_id`),
   CONSTRAINT `gocasting_photogallery_user_id_4dd7354e_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -582,12 +582,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_picturearea`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_picturearea` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `picture` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -606,12 +606,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_region`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_region` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -630,7 +630,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `password` varchar(128) NOT NULL,
@@ -645,7 +645,7 @@ CREATE TABLE `gocasting_user` (
   `email` varchar(254) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -664,7 +664,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_user_groups`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_user_groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -674,7 +674,7 @@ CREATE TABLE `gocasting_user_groups` (
   KEY `gocasting_user_groups_group_id_24ac8ede_fk_auth_group_id` (`group_id`),
   CONSTRAINT `gocasting_user_groups_group_id_24ac8ede_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
   CONSTRAINT `gocasting_user_groups_user_id_18ede1ed_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -692,7 +692,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_user_user_permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_user_user_permissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -702,7 +702,7 @@ CREATE TABLE `gocasting_user_user_permissions` (
   KEY `gocasting_user_user__permission_id_70e7b2c4_fk_auth_perm` (`permission_id`),
   CONSTRAINT `gocasting_user_user__permission_id_70e7b2c4_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `gocasting_user_user__user_id_c12e48cf_fk_gocasting` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -720,7 +720,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_videogallery`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_videogallery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `video` varchar(200) NOT NULL,
@@ -728,7 +728,7 @@ CREATE TABLE `gocasting_videogallery` (
   PRIMARY KEY (`id`),
   KEY `gocasting_videogallery_user_id_ec0a64c1_fk_gocasting_user_id` (`user_id`),
   CONSTRAINT `gocasting_videogallery_user_id_ec0a64c1_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -746,7 +746,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gocasting_workhistory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+ SET character_set_client = utf8 ;
 CREATE TABLE `gocasting_workhistory` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(130) NOT NULL,
@@ -758,7 +758,7 @@ CREATE TABLE `gocasting_workhistory` (
   PRIMARY KEY (`id`),
   KEY `gocasting_workhistory_user_id_97409d5e_fk_gocasting_user_id` (`user_id`),
   CONSTRAINT `gocasting_workhistory_user_id_97409d5e_fk_gocasting_user_id` FOREIGN KEY (`user_id`) REFERENCES `gocasting_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
