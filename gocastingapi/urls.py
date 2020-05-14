@@ -25,13 +25,18 @@ urlpatterns = [
     path('login/', views.LoginView.as_view()),
     path("user.info/", views.UserInfoView.as_view()),
     path("logout/", views.LogoutView.as_view()),
-    
+    path("user.changepasswd/", views.UserChangePasswordView.as_view()),
     path('casts/', views.AllCastView.as_view()),
     path('casts.search/', views.SearchCastView.as_view()),
     path('cast.register/', views.CastRegisterView.as_view()),
     path("cast.address.reveal/", views.AgentRevealModelAdressView.as_view()),
     path('agent.register/', views.AgentRegisterView.as_view()),
     
+    url("cast.update/$", views.CastInfoUpdateView.as_view()),
+    url("cast.workhistory/$", views.WorkHistoryCreateView.as_view()),
+    url("cast.educations/$", views.EducationHistoryCreateView.as_view()),
+    url("cast.gallery/$", views.CasatPhotoGalleryView.as_view()),
+    url("cast.video/$", views.CastVideoGalleryView.as_view()),
     
     url('^casts/(?P<castID>\d+)/$', views.CastDetailView.as_view()),
     url('^disciplines/$', views.AllDisciplines.as_view()),

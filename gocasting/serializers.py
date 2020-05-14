@@ -1,7 +1,10 @@
 from rest_framework import serializers 
 from gocasting import models, constants
 from django.db.models import Q
-from datetime import date 
+from datetime import date, datetime, timedelta
+from django.utils import timezone 
+from django.contrib.auth import get_user_model
+
 
 class PictureAreaSerializer(serializers.ModelSerializer):
     pictureName = serializers.SerializerMethodField()
@@ -48,20 +51,65 @@ class CastPhotoGallerySerializer(serializers.ModelSerializer):
         model = models.PhotoGallery
         fields = "__all__"
 
+class PhotoGalleryCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.PhotoGallery
+        exclude = "user",
+
+    def save(self, user):
+        photoGallery = models.PhotoGallery.objects.create(**self.validated_data, user=user)
+
+        return photoGallery
+
 class CastVideoGallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.VideoGallery
         fields = "__all__"
+
+class VideoGalleryCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.VideoGallery
+        exclude = "user",
+
+    def save(self, user):
+        videoGallery = models.VideoGallery.objects.create(**self.validated_data, user=user)
+
+        return videoGallery
 
 class WorkHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WorkHistory
         fields = "__all__"
 
+class WorkHistoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WorkHistory
+        exclude = "user",
+
+    def save(self, user):
+        workHistory = models.WorkHistory.objects.create(**self.validated_data, user=user)
+
+        return workHistory
+
+
 class EducationHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.EducationHistory
         fields = "__all__"
+
+class EducationHistoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.EducationHistory
+        exclude = "user",
+
+    def save(self, user):
+        educationHistory = models.EducationHistory.objects.create(**self.validated_data, user=user)
+
+        return educationHistory
+
+
 
 class AttributeDataSerializer(serializers.Serializer):
     disciplines = InterestTagSerializer(many=True)
@@ -127,9 +175,18 @@ class SearchCastSerializer(serializers.Serializer):
     name = serializers.CharField(allow_blank=True, required=False)
     discipline = serializers.IntegerField(required=False)
     
+    def validate_age(self, age_range):
+        start_age = age_range[0]
+        end_age = age_range[1]
+
+        start_birth_date = timezone.now() - timedelta(days = start_age * 365)
+        end_birth_date = timezone.now() - timedelta(days = end_age * 365)
+
+        return [start_birth_date, end_birth_date]
+
     def getAll(self, attrs):
         queryset = models.CastInfo.objects.all()
-        age = attrs.get('age')
+        birthdate = attrs.get('age')
         height = attrs.get('height')
         weight = attrs.get('weight')
         gender = attrs.get('gender', 'all')
@@ -138,8 +195,9 @@ class SearchCastSerializer(serializers.Serializer):
 
         if discipline and discipline != -1:
             queryset = queryset.filter(intersted_in__pk__contains = discipline)
-        if age:
-            queryset = queryset.filter(age__lte = age[1], age__gte=age[0])
+
+        if birthdate:
+            queryset = queryset.filter(birth_date__gte = birthdate[1], birth_date__lte=birthdate[0])
         
         if height:
             queryset = queryset.filter(height__lte = height[1], height__gte = height[0])
@@ -160,6 +218,29 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         model = models.User 
         fields = "username", "first_name", "last_name", 'email', 'password'
 
+class UserChangePasswordSerializer(serializers.ModelSerializer):
+
+    oldpass = serializers.CharField(write_only = True)
+
+    class Meta:
+        model = models.User 
+        fields = 'password', 'oldpass'
+    
+    def validate_oldpass(self, oldpass):
+        user = self.context.get('request').user
+
+        if not user.check_password( oldpass ):
+            raise serializers.ValidationError("Invalid old password")
+
+        return oldpass
+
+    def update(self, instance, validated_data):
+        instance.set_password( validated_data.get('password'))
+        instance.save()
+        return instance
+
+
+
 class CastRegisterSerializer(serializers.ModelSerializer):
     user = UserRegisterSerializer()
     class Meta:
@@ -171,10 +252,12 @@ class CastRegisterSerializer(serializers.ModelSerializer):
         languages = validated_data.pop('languages')
         intersted_in = validated_data.pop('intersted_in')
         additional_skills = validated_data.pop('additional_skills')
-        
-        user = UserRegisterSerializer(data=validated_data.pop('user'))
+        user_data = validated_data.pop('user')
+        user = UserRegisterSerializer(data=user_data)
         user.is_valid()
         user = user.save()
+        user.set_password( user_data.get('password'))
+        user.save()
         cast = models.CastInfo.objects.create(user=user, **validated_data)
 
         cast.languages.set( languages)
@@ -182,6 +265,54 @@ class CastRegisterSerializer(serializers.ModelSerializer):
         cast.additional_skills.set( additional_skills)
 
         return cast
+
+class CastUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.CastInfo
+        exclude = 'user',
+    
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    cast = CastUpdateSerializer()
+    
+    class Meta:
+        model = models.User 
+        fields = "username", "first_name", "last_name", 'email','cast'
+    
+    def update(self, instance, validated_data):
+        
+        validated_data = validated_data.copy()
+        cast_data = validated_data.pop('cast')
+        cast = instance.cast
+
+        #Cast update
+        cast.profile_picture = cast_data.pop('profile_picture')
+        cast.birth_date = cast_data.pop('birth_date')
+        cast.facebook = cast_data.pop('facebook')
+        cast.instagram = cast_data.pop('instagram')
+        cast.twitter = cast_data.pop('twitter')
+        cast.phone = cast_data.pop('phone')
+        cast.gender = cast_data.pop('gender')
+        cast.height = cast_data.pop('height')
+        cast.weight = cast_data.pop('weight')
+        cast.region = cast_data.pop('region')
+        cast.city = cast_data.pop('city')
+        cast.languages.set( cast_data.pop('languages'))
+        cast.intersted_in.set( cast_data.pop('intersted_in'))
+        cast.additional_skills.set( cast_data.pop('additional_skills'))
+
+        instance.cast.save()
+
+        #user update 
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save() 
+
+        return instance
+
 
 class AgentRegisterSerializer(serializers.ModelSerializer):
     
@@ -195,21 +326,31 @@ class AgentRegisterSerializer(serializers.ModelSerializer):
     def save(self):
 
         validated_data = self.validated_data.copy()
-        user = UserRegisterSerializer(data=validated_data.pop('user'))
-        user.is_valid()
-        user = user.save()
+        
+        user_data = validated_data.pop('user')
+        password = user_data.get('password')
+
+        user = get_user_model().objects.create(**user_data)
+        user.set_password(password)
+        user.save()
+
         agent = models.AgentInfo.objects.create(user=user, **validated_data)
 
 
         return agent
 
-class LoggedCastInfoReadSerializer(serializers.Serializer):
+class AgentReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AgentInfo
+        fields = '__all__'
+
+class LoggedCastInfoReadSerializer(serializers.ModelSerializer):
     region = RegionSerializer() 
     city = CitySerializer() 
     languages = LanguageSerializer(many=True)
     additional_skills = AdditionalSkillSerializer(many=True)
     intersted_in = InterestTagSerializer(many=True)
-    user = UserCastReadSerializer()
+    #user = UserCastReadSerializer()
     age = serializers.SerializerMethodField()
 
     def get_age(self, cast):
@@ -220,10 +361,22 @@ class LoggedCastInfoReadSerializer(serializers.Serializer):
 
     class Meta:
         model = models.CastInfo
-        fields = "__all__"
+        exclude = "user",
 
 class LoggedUserInfoSerializer( serializers.ModelSerializer):
     cast = LoggedCastInfoReadSerializer()
+    photos = CastPhotoGallerySerializer(many=True)
+    videos = CastVideoGallerySerializer(many=True)
+    work_histories = WorkHistorySerializer(many=True)
+    education_histories = EducationHistorySerializer(many=True)
+    
+    class Meta:
+        model = models.User 
+        exclude = "is_superuser", "is_staff", 'is_active','groups', 'user_permissions','password'
+
+class LoggedUserAgentSerializer( serializers.ModelSerializer):
+    agent = AgentReadSerializer()
+    
     class Meta:
         model = models.User 
         exclude = "is_superuser", "is_staff", 'is_active','groups', 'user_permissions','password'

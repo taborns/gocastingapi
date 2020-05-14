@@ -117,6 +117,8 @@ class WorkHistory(models.Model):
     end_year = models.IntegerField(null=True, blank=True)
     description = models.TextField(blank=True)
 
+    class Meta:
+        ordering = '-pk',
 class EducationHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='education_histories', on_delete = models.CASCADE)
     title = models.CharField(max_length=130)
@@ -124,3 +126,6 @@ class EducationHistory(models.Model):
     start_year = models.IntegerField()
     end_year = models.IntegerField(null=True, blank=True)
     description = models.TextField(blank=True)
+
+    class Meta:
+        ordering = '-pk',

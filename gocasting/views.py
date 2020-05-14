@@ -140,6 +140,7 @@ class CastRegisterView( generics.CreateAPIView):
     serializer_class = serializers.CastRegisterSerializer
     queryset = models.CastInfo.objects.all()
 
+
 class AgentRegisterView( generics.CreateAPIView):
     serializer_class = serializers.AgentRegisterSerializer
     queryset = models.AgentInfo.objects.all()
@@ -148,8 +149,16 @@ class UserInfoView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request, format=None):
-        serializer = serializers.LoggedUserInfoSerializer(request.user)
-        return Response(serializer.data)
+        print("HERE AND THERE BITCHES")
+        
+        if hasattr(request.user, 'cast'):
+            serializer = serializers.LoggedUserInfoSerializer(request.user)
+            return Response(serializer.data)
+
+        elif hasattr(request.user, 'agent'):
+            serializer = serializers.LoggedUserAgentSerializer(request.user)
+            return Response(serializer.data)
+
 
 
 class LogoutView(views.APIView):
@@ -157,3 +166,84 @@ class LogoutView(views.APIView):
     def get(self, request):
         logout(request)
         return Response('loggedout')
+
+class CastInfoUpdateView( generics.UpdateAPIView):
+    serializer_class = serializers.UserUpdateSerializer
+    queryset = models.User.objects.all()
+    permission_classes = (IsAuthenticated, )
+
+    def get_object(self):
+        return self.request.user
+
+class UserChangePasswordView( generics.UpdateAPIView):
+
+    serializer_class = serializers.UserChangePasswordSerializer
+    queryset = models.User.objects.all()
+    permission_classes = (IsAuthenticated, )
+
+    def get_object(self):
+        return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+        
+
+class WorkHistoryCreateView(generics.CreateAPIView):
+    serializer_class = serializers.WorkHistoryCreateSerializer
+    queryset = models.WorkHistory.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(request.user)
+        
+        return Response(serializer.data)
+
+class EducationHistoryCreateView(generics.CreateAPIView):
+    serializer_class = serializers.EducationHistoryCreateSerializer
+    queryset = models.EducationHistory.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(request.user)
+        
+        return Response(serializer.data)
+
+
+class CasatPhotoGalleryView(generics.CreateAPIView):
+    serializer_class = serializers.PhotoGalleryCreateSerializer
+    queryset = models.PhotoGallery.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(request.user)
+        
+        return Response(serializer.data)
+
+class CastVideoGalleryView(generics.CreateAPIView):
+    serializer_class = serializers.VideoGalleryCreateSerializer
+    queryset = models.VideoGallery.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(request.user)
+        
+        return Response(serializer.data)
+
