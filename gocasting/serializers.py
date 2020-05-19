@@ -62,6 +62,20 @@ class PhotoGalleryCreateSerializer(serializers.ModelSerializer):
 
         return photoGallery
 
+class PhotoGalleryDestroySerializer(serializers.Serializer):
+    photos = serializers.ListField(child=serializers.IntegerField())
+
+    def validate_photos(self, photos):
+        user = self.context.get('request').user
+        photos = user.photos.filter(pk__in = photos)
+        return photos 
+    
+    def destroy(self):
+        photos = self.validated_data.get('photos')
+        print("PHOTOS", photos)
+        photos.delete() 
+        
+        
 class CastVideoGallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.VideoGallery
@@ -82,11 +96,22 @@ class WorkHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WorkHistory
         fields = "__all__"
+    
+    def validate(self, attrs):
+        start_year = attrs.get('start_year')
+        end_year = attrs.get('end_year')
 
-class WorkHistoryCreateSerializer(serializers.ModelSerializer):
+        if end_year and start_year > end_year:
+            raise serializers.ValidationError("The end year has to be greater than the start year")
+
+        return attrs
+    
+
+class WorkHistoryCreateSerializer(WorkHistorySerializer):
     class Meta:
         model = models.WorkHistory
         exclude = "user",
+
 
     def save(self, user):
         workHistory = models.WorkHistory.objects.create(**self.validated_data, user=user)
@@ -99,7 +124,16 @@ class EducationHistorySerializer(serializers.ModelSerializer):
         model = models.EducationHistory
         fields = "__all__"
 
-class EducationHistoryCreateSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        start_year = attrs.get('start_year')
+        end_year = attrs.get('end_year')
+
+        if end_year and start_year > end_year:
+            raise serializers.ValidationError("The end year has to be greater than the start year")
+
+        return attrs
+
+class EducationHistoryCreateSerializer(EducationHistorySerializer):
     class Meta:
         model = models.EducationHistory
         exclude = "user",
@@ -217,6 +251,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User 
         fields = "username", "first_name", "last_name", 'email', 'password'
+        extra_kwargs = {
+            'first_name': {'required': True, "allow_blank" : False},
+            'last_name': {'required': True, "allow_blank" : False},
+        }
+
 
 class UserChangePasswordSerializer(serializers.ModelSerializer):
 
@@ -247,6 +286,14 @@ class CastRegisterSerializer(serializers.ModelSerializer):
         model = models.CastInfo
         fields = '__all__'
     
+    def validate_phone(self, telephone):
+        import re
+        match = re.match('(0|\+251)(9\d{8})', telephone)
+        if match:
+            return "+251%s" %(match.group(2))
+        
+        raise serializers.ValidationError('Invalid phone number provided')
+
     def save(self):
         validated_data = self.validated_data.copy()
         languages = validated_data.pop('languages')
@@ -273,6 +320,13 @@ class CastUpdateSerializer(serializers.ModelSerializer):
         exclude = 'user',
     
 
+    def validate_phone(self, telephone):
+        import re
+        match = re.match('(0|\+251)(9\d{8})', telephone)
+        if match:
+            return "+251%s" %(match.group(2))
+        
+        raise serializers.ValidationError('Invalid phone number provided')
 class UserUpdateSerializer(serializers.ModelSerializer):
     cast = CastUpdateSerializer()
     
@@ -280,6 +334,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = models.User 
         fields = "username", "first_name", "last_name", 'email','cast'
     
+        extra_kwargs = {
+            'first_name': {'required': True, "allow_blank" : False},
+            'last_name': {'required': True, "allow_blank" : False},
+        }
+
     def update(self, instance, validated_data):
         
         validated_data = validated_data.copy()
@@ -339,7 +398,60 @@ class AgentRegisterSerializer(serializers.ModelSerializer):
 
         return agent
 
+class AgentUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.AgentInfo
+        exclude = 'user', 'balance'
+    
+
+    def validate_phone(self, telephone):
+        import re
+        match = re.match('(0|\+251)(9\d{8})', telephone)
+        if match:
+            return "+251%s" %(match.group(2))
+        
+        raise serializers.ValidationError('Invalid phone number provided')
+class UserAgentUpdateSerializer(serializers.ModelSerializer):
+    agent = AgentUpdateSerializer()
+    
+    class Meta:
+        model = models.User 
+        fields = "username", "first_name", "last_name", 'email','agent'
+    
+        extra_kwargs = {
+            'first_name': {'required': True, "allow_blank" : False},
+            'last_name': {'required': True, "allow_blank" : False},
+        }
+
+    def update(self, instance, validated_data):
+        
+        validated_data = validated_data.copy()
+        agent_data = validated_data.pop('agent')
+        agent = instance.agent
+
+        #Cast update
+        agent.phone = agent_data.pop('phone')
+        agent.company = agent_data.pop('company')
+        agent.city = agent_data.pop('city')
+        agent.region = agent_data.pop('region')
+        instance.agent.save()
+
+        #user update 
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save() 
+
+        return instance
+
+
+
 class AgentReadSerializer(serializers.ModelSerializer):
+    region = RegionSerializer() 
+    city = CitySerializer() 
+
     class Meta:
         model = models.AgentInfo
         fields = '__all__'
@@ -414,5 +526,23 @@ class RevealCastAdressSerializer( serializers.Serializer):
         models.AgentModel.objects.get_or_create( agent = agentUsr , cast=cast.user)
 
         return cast
+
+class JobListSerializer(serializers.ModelSerializer):
+    region = RegionSerializer()
+    class Meta:
+        model = models.Job
+        exclude = 'requirement',
+
+class JobCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = models.Job 
+        exclude = "created_by", "created_on"
+    
+    def save(self):
+        agentUsr = self.context['request'].user
+        job = models.Job.objects.create(created_by = agentUsr, **self.validated_data)
+
+        return job
 
 

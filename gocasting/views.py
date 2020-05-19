@@ -144,12 +144,20 @@ class CastRegisterView( generics.CreateAPIView):
 class AgentRegisterView( generics.CreateAPIView):
     serializer_class = serializers.AgentRegisterSerializer
     queryset = models.AgentInfo.objects.all()
-    
+
+class AgentUpdateView( generics.UpdateAPIView):
+    serializer_class = serializers.UserAgentUpdateSerializer
+    queryset = models.User.objects.all()
+    permission_classes = (IsAuthenticated, )
+
+
+    def get_object(self):
+        return self.request.user
+
 class UserInfoView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request, format=None):
-        print("HERE AND THERE BITCHES")
         
         if hasattr(request.user, 'cast'):
             serializer = serializers.LoggedUserInfoSerializer(request.user)
@@ -168,6 +176,7 @@ class LogoutView(views.APIView):
         return Response('loggedout')
 
 class CastInfoUpdateView( generics.UpdateAPIView):
+
     serializer_class = serializers.UserUpdateSerializer
     queryset = models.User.objects.all()
     permission_classes = (IsAuthenticated, )
@@ -210,7 +219,18 @@ class WorkHistoryCreateView(generics.CreateAPIView):
         
         return Response(serializer.data)
 
+class WorkHistoryDestroyView(generics.DestroyAPIView):
+
+    serializer_class = serializers.WorkHistoryCreateSerializer
+    queryset = models.WorkHistory.objects.all() 
+    permission_classes = (IsAuthenticated, )
+    lookup_url_kwarg ='workID'
+
+    def get_object(self):
+        return get_object_or_404(self.get_queryset(), user = self.request.user, pk = self.kwargs[self.lookup_url_kwarg])
+
 class EducationHistoryCreateView(generics.CreateAPIView):
+
     serializer_class = serializers.EducationHistoryCreateSerializer
     queryset = models.EducationHistory.objects.all() 
     permission_classes = (IsAuthenticated, )
@@ -222,6 +242,15 @@ class EducationHistoryCreateView(generics.CreateAPIView):
         
         return Response(serializer.data)
 
+class EducationHistoryDestroyView(generics.DestroyAPIView):
+
+    serializer_class = serializers.EducationHistoryCreateSerializer
+    queryset = models.EducationHistory.objects.all() 
+    permission_classes = (IsAuthenticated, )
+    lookup_url_kwarg ='eduID'
+
+    def get_object(self):
+        return get_object_or_404(self.get_queryset(), user = self.request.user, pk = self.kwargs[self.lookup_url_kwarg])
 
 class CasatPhotoGalleryView(generics.CreateAPIView):
     serializer_class = serializers.PhotoGalleryCreateSerializer
@@ -235,6 +264,18 @@ class CasatPhotoGalleryView(generics.CreateAPIView):
         
         return Response(serializer.data)
 
+class CasatPhotoGalleryDestroyView(generics.DestroyAPIView):
+    
+    serializer_class = serializers.PhotoGalleryDestroySerializer
+    queryset = models.PhotoGallery.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def destroy(self, request, *args, **kwargs):
+        serializer =  self.get_serializer(data = request.data,  context={'request' : request})
+        serializer.is_valid(raise_exception = True)
+        serializer.destroy()
+        return Response("DONE")
+
 class CastVideoGalleryView(generics.CreateAPIView):
     serializer_class = serializers.VideoGalleryCreateSerializer
     queryset = models.VideoGallery.objects.all() 
@@ -247,3 +288,33 @@ class CastVideoGalleryView(generics.CreateAPIView):
         
         return Response(serializer.data)
 
+class CastVideoGalleryDestroyView(generics.DestroyAPIView):
+    serializer_class = serializers.VideoGalleryCreateSerializer
+    queryset = models.VideoGallery.objects.all() 
+    permission_classes = (IsAuthenticated, )
+    lookup_url_kwarg ='videoID'
+
+    def get_object(self):
+        return get_object_or_404(self.get_queryset(), user = self.request.user, pk = self.kwargs[self.lookup_url_kwarg])
+
+
+class JobCreateView(generics.CreateAPIView):
+    serializer_class = serializers.JobCreateSerializer
+    queryset = models.Job.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+
+        serializer =  self.get_serializer(data = request.data,  context={'request' : request})
+        serializer.is_valid(raise_exception = True)
+        serializer.save()
+
+        return Response(serializer.data)
+
+    
+class JobListView(generics.ListAPIView):
+
+    serializer_class = serializers.JobListSerializer
+    queryset = models.Job.objects.all() 
+    permission_classes = (IsAuthenticated, )
+    

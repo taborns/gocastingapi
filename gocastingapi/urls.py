@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from gocasting import views 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -31,17 +31,23 @@ urlpatterns = [
     path('cast.register/', views.CastRegisterView.as_view()),
     path("cast.address.reveal/", views.AgentRevealModelAdressView.as_view()),
     path('agent.register/', views.AgentRegisterView.as_view()),
-    
+    path('agent.update/', views.AgentUpdateView.as_view()),
     url("cast.update/$", views.CastInfoUpdateView.as_view()),
     url("cast.workhistory/$", views.WorkHistoryCreateView.as_view()),
+    url("cast.workhistory.remove/(?P<workID>\d+)/$", views.WorkHistoryDestroyView.as_view()),
     url("cast.educations/$", views.EducationHistoryCreateView.as_view()),
+    url("cast.educations.remove/(?P<eduID>\d+)/$", views.EducationHistoryDestroyView.as_view()),
     url("cast.gallery/$", views.CasatPhotoGalleryView.as_view()),
+    url("cast.gallery.remove/$", views.CasatPhotoGalleryDestroyView.as_view()),
     url("cast.video/$", views.CastVideoGalleryView.as_view()),
-    
+    url("cast.video.remove/(?P<videoID>\d+)/$", views.CastVideoGalleryDestroyView.as_view()),
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
     url('^casts/(?P<castID>\d+)/$', views.CastDetailView.as_view()),
     url('^disciplines/$', views.AllDisciplines.as_view()),
     url('^attributedatas/$', views.AttributeDataView.as_view()),
     url('^upload.picture/$', views.PictureAreaView.as_view()),
+    url('^job.create/$', views.JobCreateView.as_view()),
+    url('^jobs/$', views.JobListView.as_view()),
 
 ]
 

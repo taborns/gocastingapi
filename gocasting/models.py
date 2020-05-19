@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,UserManager
 from django.conf import settings
+from ckeditor_uploader.fields import RichTextUploadingField
 
 """ 
 ^(?:https?:\/\/)?(?:(www\.)|(m\.))?youtu\.?be(?:\.com)?.*?(?:v|list)=(.*?)(?:&|$)
@@ -59,8 +60,8 @@ class CastInfo(models.Model):
     profile_picture = models.CharField(max_length=150)
 
     #Adress Information
-    region = models.ForeignKey("Region", related_name='region',  null=True, on_delete=models.SET_NULL)
-    city = models.ForeignKey("City", related_name='city', null=True, on_delete=models.SET_NULL)
+    region = models.ForeignKey("Region", related_name='casts',  null=True, on_delete=models.SET_NULL)
+    city = models.ForeignKey("City", related_name='casts', null=True, on_delete=models.SET_NULL)
 
     facebook = models.URLField(null=True, blank=True)
     instagram = models.URLField(null=True, blank=True)
@@ -73,6 +74,12 @@ class CastInfo(models.Model):
 class AgentInfo(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agent', on_delete = models.CASCADE)
     phone = models.CharField(max_length=15)
+    company = models.CharField(max_length=100)
+
+    #Adress Information
+    region = models.ForeignKey("Region", related_name='agents',  null=True, on_delete=models.SET_NULL)
+    city = models.ForeignKey("City", related_name='agents', null=True, on_delete=models.SET_NULL)
+    
     balance = models.FloatField(default=0)
 
     def deposit(self, amount):
@@ -118,7 +125,8 @@ class WorkHistory(models.Model):
     description = models.TextField(blank=True)
 
     class Meta:
-        ordering = '-pk',
+        ordering = 'start_year', 'end_year'
+
 class EducationHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='education_histories', on_delete = models.CASCADE)
     title = models.CharField(max_length=130)
@@ -128,4 +136,34 @@ class EducationHistory(models.Model):
     description = models.TextField(blank=True)
 
     class Meta:
-        ordering = '-pk',
+        ordering = 'start_year', 'end_year'
+
+
+class Job(models.Model):
+
+    title = models.CharField(max_length = 130)
+    requirement = RichTextUploadingField() 
+
+    #location 
+    region = models.ForeignKey("Region", related_name='jobs',  null=True, on_delete=models.SET_NULL)
+    address = models.CharField(max_length = 130)
+    gender = models.CharField(max_length = 12, choices = (
+        ('all', 'All'),
+        ('female', 'Female'),
+        ('female', 'Female')
+    ))
+
+    start_age = models.IntegerField()
+    end_age = models.IntegerField()
+    payment = models.CharField(max_length = 150)
+    closes_on = models.DateField()
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='jobs',  null=True, on_delete=models.SET_NULL)
+    created_on = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        return "%s" % (self.title)
+class Application(models.Model):
+    cast = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='applications',  null=True, on_delete=models.SET_NULL)
+    job = models.ForeignKey("Job", related_name='applications',  null=True, on_delete=models.SET_NULL)
+    applied_on = models.DateTimeField(auto_now_add = True)
+

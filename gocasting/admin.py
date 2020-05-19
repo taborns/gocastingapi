@@ -44,9 +44,13 @@ class InterestTagAdmin(admin.ModelAdmin):
 class AdditionalSkillAdmin(admin.ModelAdmin):
     pass
 
+class JobAdmin(admin.ModelAdmin):
+    pass 
+
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Language, LanguageAdmin)
 admin.site.register(models.Region, RegionAdmin)
 admin.site.register(models.City, CityAdmin)
 admin.site.register(models.InterestTag, InterestTagAdmin)
 admin.site.register(models.AdditionalSkill, AdditionalSkillAdmin)
+admin.site.register(models.Job, JobAdmin)
