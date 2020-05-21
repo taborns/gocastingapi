@@ -48,7 +48,11 @@ urlpatterns = [
     url('^upload.picture/$', views.PictureAreaView.as_view()),
     url('^job.create/$', views.JobCreateView.as_view()),
     url('^jobs/$', views.JobListView.as_view()),
-
+    url('^jobs/(?P<jobID>\d+)/$', views.JobDetailView.as_view()),
+    url('^job.update/(?P<jobID>\d+)/$', views.JobUpdateView.as_view()),
+    url('^job.remove/(?P<jobID>\d+)/$', views.JobDestroyView.as_view()),
+    url('^job.apply/$', views.JobApply.as_view()),
+    url('^search-jobs/$', views.JobSearchView.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

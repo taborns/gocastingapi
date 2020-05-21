@@ -150,20 +150,29 @@ class Job(models.Model):
     gender = models.CharField(max_length = 12, choices = (
         ('all', 'All'),
         ('female', 'Female'),
-        ('female', 'Female')
+        ('male', 'Male')
     ))
 
-    start_age = models.IntegerField()
-    end_age = models.IntegerField()
+    start_age = models.IntegerField(default=0)
+    end_age = models.IntegerField(default=150)
     payment = models.CharField(max_length = 150)
     closes_on = models.DateField()
+    is_open = models.BooleanField(default=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='jobs',  null=True, on_delete=models.SET_NULL)
     created_on = models.DateTimeField(auto_now_add = True)
 
+
     def __str__(self):
         return "%s" % (self.title)
+    
+    def applied_by(self, applicant):
+        return self.applications.filter(applicant = applicant).exists()
+        
+    class Meta:
+        ordering = '-created_on',
+
 class Application(models.Model):
-    cast = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='applications',  null=True, on_delete=models.SET_NULL)
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='applications',  null=True, on_delete=models.SET_NULL)
     job = models.ForeignKey("Job", related_name='applications',  null=True, on_delete=models.SET_NULL)
     applied_on = models.DateTimeField(auto_now_add = True)
 

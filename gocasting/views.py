@@ -316,5 +316,72 @@ class JobListView(generics.ListAPIView):
 
     serializer_class = serializers.JobListSerializer
     queryset = models.Job.objects.all() 
+
+class JobSearchView(generics.CreateAPIView):
+
+    serializer_class = serializers.JobSearchSerializer
+    queryset = models.Job.objects.all() 
+
+
+    def create(self, request, *args, **kwargs):
+        
+        searchSerializer = self.get_serializer(data = request.data )
+        searchSerializer.is_valid(raise_exception=True) 
+        
+        data = searchSerializer.validated_data
+        jobs = searchSerializer.getAll(data)
+        jobs = self.paginate_queryset(jobs)  
+
+        serializer = serializers.JobListSerializer(jobs, many=True, context={'request' : request})
+        return self.get_paginated_response(serializer.data)   
+
+class JobDetailView(generics.RetrieveAPIView):
+
+    serializer_class = serializers.JobDetailSerializer
+    queryset = models.Job.objects.all() 
+    lookup_url_kwarg ='jobID'
+
+    def get_object(self):
+
+        job = get_object_or_404(models.Job, pk = self.kwargs[self.lookup_url_kwarg])
+
+        if self.request.user.is_authenticated:
+
+            job.applied = job.applied_by( self.request.user)
+
+        return job 
+
+class JobUpdateView(generics.UpdateAPIView):
+
+    serializer_class = serializers.JobUpdateSerializer
+    queryset = models.Job.objects.all() 
     permission_classes = (IsAuthenticated, )
-    
+    lookup_url_kwarg ='jobID'
+
+    def get_object(self):
+        return get_object_or_404(self.get_queryset(), created_by = self.request.user, pk = self.kwargs[self.lookup_url_kwarg])
+
+
+class JobDestroyView(generics.DestroyAPIView):
+
+    serializer_class = serializers.JobDetailSerializer
+    queryset = models.Job.objects.all() 
+    permission_classes = (IsAuthenticated, )
+    lookup_url_kwarg ='jobID'
+
+    def get_object(self):
+        return get_object_or_404(self.get_queryset(), created_by = self.request.user, pk = self.kwargs[self.lookup_url_kwarg])
+
+class JobApply(generics.CreateAPIView):
+
+    serializer_class = serializers.JobApplySerializer
+    queryset = models.Application.objects.all() 
+    permission_classes = (IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,  context={'request' : request})
+        serializer.is_valid( raise_exception = True)
+
+        serializer.save()
+
+        return Response(serializer.data)

@@ -4,7 +4,7 @@ from django.db.models import Q
 from datetime import date, datetime, timedelta
 from django.utils import timezone 
 from django.contrib.auth import get_user_model
-
+import datetime 
 
 class PictureAreaSerializer(serializers.ModelSerializer):
     pictureName = serializers.SerializerMethodField()
@@ -257,6 +257,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         }
 
 
+
 class UserChangePasswordSerializer(serializers.ModelSerializer):
 
     oldpass = serializers.CharField(write_only = True)
@@ -475,6 +476,25 @@ class LoggedCastInfoReadSerializer(serializers.ModelSerializer):
         model = models.CastInfo
         exclude = "user",
 
+
+class JobListSerializer(serializers.ModelSerializer):
+    region = RegionSerializer()
+    is_open = serializers.SerializerMethodField()
+
+    def get_is_open(self, job):
+
+        today = timezone.datetime.today().date()  + datetime.timedelta(days=0)
+
+        if job.is_open and job.closes_on:
+            return job.closes_on > today
+
+        return job.is_open
+
+    class Meta:
+        model = models.Job
+        exclude = 'requirement',
+
+
 class LoggedUserInfoSerializer( serializers.ModelSerializer):
     cast = LoggedCastInfoReadSerializer()
     photos = CastPhotoGallerySerializer(many=True)
@@ -488,7 +508,7 @@ class LoggedUserInfoSerializer( serializers.ModelSerializer):
 
 class LoggedUserAgentSerializer( serializers.ModelSerializer):
     agent = AgentReadSerializer()
-    
+    jobs = JobListSerializer(many=True)
     class Meta:
         model = models.User 
         exclude = "is_superuser", "is_staff", 'is_active','groups', 'user_permissions','password'
@@ -527,11 +547,69 @@ class RevealCastAdressSerializer( serializers.Serializer):
 
         return cast
 
-class JobListSerializer(serializers.ModelSerializer):
+class JobSearchSerializer(serializers.Serializer):
+
+    title = serializers.CharField(required = False, allow_blank=True)
+    status = serializers.ChoiceField( required = False,  default='all', choices = (('all', 'All'), ('open', "Open"), ('closed', "Closed")))
+    gender = serializers.ChoiceField( required = False, default='all', choices = (('all', 'All'), ('male', "Male"), ('female', "Female")))
+    region = serializers.IntegerField( required=False)
+
+
+    def getAll(self, attrs):
+        queryset = models.Job.objects.all() 
+        status = attrs.get("status", None )
+
+        if attrs.get('title', None):
+            queryset = queryset.filter(title__icontains = attrs['title'])
+
+        if status:
+            
+            today = timezone.datetime.today().date()  + datetime.timedelta(days=0)
+            
+            open_filter = Q(closes_on__gte = today, is_open = True)
+            closed_filter = Q(closes_on__lt = today) | Q(is_open = False)
+
+            if status == 'all':
+                queryset = queryset.filter( open_filter | closed_filter )
+            
+            if status == 'open':
+                queryset = queryset.filter( open_filter )
+            
+            if status == 'closed':
+                queryset = queryset.filter( closed_filter )
+                
+
+        if attrs.get('gender', None):
+            gender_filter = Q(gender = attrs['gender']) | Q(gender = 'all')
+
+            if attrs['gender'] == 'all':
+                gender_filter |= Q(gender = 'female') | Q(gender = 'male')
+            
+
+            queryset = queryset.filter( gender_filter )
+    
+        if attrs.get('region', None):
+            queryset = queryset.filter(region__id = attrs['region'])
+    
+
+        return queryset 
+
+class JobDetailSerializer(serializers.ModelSerializer):
     region = RegionSerializer()
+    is_open = serializers.SerializerMethodField()
+    applied = serializers.BooleanField(read_only = True)
+    def get_is_open(self, job):
+
+        today = timezone.datetime.today().date()  + datetime.timedelta(days=0)
+
+        if job.is_open and job.closes_on:
+            return job.closes_on > today
+
+        return job.is_open
+
     class Meta:
         model = models.Job
-        exclude = 'requirement',
+        exclude = 'created_by',
 
 class JobCreateSerializer(serializers.ModelSerializer):
     
@@ -545,4 +623,48 @@ class JobCreateSerializer(serializers.ModelSerializer):
 
         return job
 
+class JobUpdateSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = models.Job 
+        exclude = "created_by", "created_on"
+    
+
+    def update(self, instance, validated_data):
+
+        instance.start_age = validated_data['start_age']
+        instance.end_age = validated_data['end_age']
+        instance.title = validated_data['title']
+        instance.closes_on = validated_data['closes_on']
+        instance.address = validated_data['address']
+        instance.payment = validated_data['payment']
+        instance.gender = validated_data['gender']
+        instance.region = validated_data['region']
+        instance.requirement = validated_data['requirement']
+        
+        instance.save()
+
+        return instance
+
+class JobApplySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Application
+        exclude = 'applied_on', 'applicant'
+    
+    def validate(self, attrs):
+        job = attrs['job']
+        applicant = self.context['request'].user
+
+        if job.applied_by( applicant ):
+            raise serializers.ValidationError("You have applied to this job already")
+
+        return attrs
+
+    
+    def save(self):
+        attrs = self.validated_data 
+        applicant = self.context['request'].user
+
+        application = models.Application.objects.create(job = attrs['job'], applicant = applicant)
+        return application 
