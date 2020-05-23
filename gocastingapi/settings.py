@@ -25,7 +25,7 @@ SECRET_KEY = 'u1(#7-0lfgphy&yor2p4cktbmr0qapae7(qouqk0cpz8#930-2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'gocasting.User'
 
 

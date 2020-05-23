@@ -42,7 +42,7 @@ urlpatterns = [
     url("cast.video/$", views.CastVideoGalleryView.as_view()),
     url("cast.video.remove/(?P<videoID>\d+)/$", views.CastVideoGalleryDestroyView.as_view()),
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
-    url('^casts/(?P<castID>\d+)/$', views.CastDetailView.as_view()),
+    url('^casts/(?P<castUsername>(\d|\w)+)/$', views.CastDetailView.as_view()),
     url('^disciplines/$', views.AllDisciplines.as_view()),
     url('^attributedatas/$', views.AttributeDataView.as_view()),
     url('^upload.picture/$', views.PictureAreaView.as_view()),

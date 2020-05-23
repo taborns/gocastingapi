@@ -79,10 +79,10 @@ class AttributeDataView(generics.ListAPIView):
 class CastDetailView( generics.RetrieveAPIView):
     serializer_class = serializers.CastInfoReadSerializer
     queryset = models.CastInfo.objects.all()
-    lookup_url_kwarg ='castID'
+    lookup_url_kwarg ='castUsername'
 
     def get_object(self):
-        return get_object_or_404(self.get_queryset(), pk = self.kwargs[self.lookup_url_kwarg])
+        return get_object_or_404(self.get_queryset(),  user__username = self.kwargs[self.lookup_url_kwarg])
 
     def retrieve(self, request, *args, **kwargs):
         cast = self.get_object()
